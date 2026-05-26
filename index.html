@@ -1,0 +1,633 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VOCL — Atharva Vaze</title>
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/png" sizes="64x64" href="favicon-64.png">
+<link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png">
+<link rel="apple-touch-icon" href="favicon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --ink:#0a0a0a;
+    --ink-2:#111111;
+    --ink-3:#161616;
+    --border:#1f1f1f;
+    --paper:#ece6d8;
+    --paper-dim:#ece6d8;
+    --paper-faint:#d8d0bb;
+    --gold:#c9a84c;
+    --gold-deep:#8c7530;
+    --blue:#4a9eff;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--ink);color:var(--paper);
+    font-family:"DM Sans",system-ui,sans-serif;
+    font-weight:400;font-size:15px;line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;letter-spacing:.005em;
+  }
+  img,video,canvas{display:block;max-width:100%}
+  img,video{height:auto;image-rendering:auto}
+
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:200;
+    opacity:.05;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.9 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+
+  .wrap{max-width:1320px;margin:0 auto;padding:0 clamp(20px,4vw,48px)}
+
+  /* topbar */
+  .topbar{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:16px clamp(20px,4vw,48px);
+    font-size:10.5px;letter-spacing:.26em;text-transform:uppercase;font-weight:500;
+    color:var(--paper);
+  }
+  .topbar b{color:var(--gold);font-weight:500;letter-spacing:.32em}
+
+  /* title block (modest, text-only) */
+  .titleblock{
+    padding:clamp(40px,6vh,72px) 0 clamp(28px,4vh,40px);
+    text-align:center;
+  }
+  .titleblock .label{
+    display:inline-flex;align-items:center;gap:12px;
+    font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--paper);font-weight:500;
+    margin-bottom:14px;
+  }
+  .titleblock .label::before,.titleblock .label::after{
+    content:"";display:block;width:28px;height:1px;background:var(--gold-deep);
+  }
+  .titleblock h1{
+    font-family:"Playfair Display",serif;
+    font-weight:500;color:var(--gold);
+    font-size:clamp(36px,5vw,64px);
+    line-height:1;letter-spacing:-.015em;
+  }
+  .titleblock h1 em{font-style:italic;font-weight:400;color:var(--paper);opacity:.85}
+  .titleblock .tag{
+    margin-top:18px;
+    font-size:11.5px;letter-spacing:.26em;text-transform:uppercase;color:var(--paper);font-weight:500;
+  }
+  .titleblock .tag .muted{color:var(--paper-dim);font-weight:500}
+  .titleblock .tag .dot{width:3px;height:3px;background:var(--gold);border-radius:50%;display:inline-block;vertical-align:middle;margin:0 8px}
+
+  /* main photo (NASA), no crop */
+  .mainshot{
+    margin:0 auto clamp(50px,7vh,80px);
+    max-width:860px;
+    padding:0 clamp(20px,4vw,48px);
+  }
+  .mainshot .frame{
+    position:relative;
+    background:#0a0a0a;
+    border:1px solid var(--border);
+    overflow:hidden;
+  }
+  .mainshot .frame img{
+    width:100%;height:auto;display:block;
+    filter:saturate(.92) contrast(1.04);
+  }
+  .mainshot .cap{
+    padding:14px 22px 16px;
+    display:flex;justify-content:space-between;align-items:flex-start;gap:18px;
+    border-top:1px solid var(--border);
+    background:var(--ink-2);
+  }
+  .mainshot .cap .t{
+    font-family:"Playfair Display",serif;font-weight:500;
+    color:var(--gold);font-size:clamp(16px,1.4vw,20px);
+    line-height:1.15;letter-spacing:-.005em;
+  }
+  .mainshot .cap .t em{font-style:italic;font-weight:400;color:var(--paper);opacity:.85}
+  .mainshot .cap .t .sub{
+    display:block;margin-top:6px;
+    font-family:"DM Sans",sans-serif;font-weight:400;
+    font-size:13px;color:var(--paper-dim);
+    line-height:1.45;max-width:60ch;
+  }
+  .mainshot .cap .meta{
+    flex-shrink:0;font-size:10.5px;letter-spacing:.26em;text-transform:uppercase;color:var(--paper);font-weight:500;
+    text-align:right;line-height:1.6;white-space:nowrap;
+  }
+
+  /* section header */
+  .sec-head{
+    display:flex;align-items:baseline;justify-content:space-between;gap:24px;
+    padding:clamp(50px,7vh,80px) 0 clamp(20px,2.5vh,28px);
+    border-bottom:1px solid var(--border);
+    margin-bottom:clamp(20px,2.5vh,30px);
+  }
+  .sec-head .L{
+    font-family:"Playfair Display",serif;font-weight:500;
+    color:var(--gold);font-size:clamp(22px,2.4vw,32px);
+    line-height:1;letter-spacing:-.005em;
+  }
+  .sec-head .L em{font-style:italic;font-weight:400;color:var(--paper);opacity:.85}
+  .sec-head .L .num{
+    font-family:"Playfair Display",serif;font-style:italic;font-weight:400;
+    color:var(--gold-deep);font-size:.7em;margin-right:14px;
+  }
+  .sec-head .R{
+    font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--paper);font-weight:500;
+    text-align:right;line-height:1.6;
+  }
+
+  /* grids */
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:clamp(14px,2vw,22px)}
+  .grid-2-asym{display:grid;grid-template-columns:1.35fr 1fr;gap:clamp(14px,2vw,22px)}
+  .grid-2-team-a{display:grid;grid-template-columns:1fr 2fr;gap:clamp(14px,2vw,22px)}
+  .grid-2-team-b{display:grid;grid-template-columns:2fr 1fr;gap:clamp(14px,2vw,22px)}
+  .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:clamp(14px,2vw,22px)}
+
+  /* card */
+  .card{
+    position:relative;background:var(--ink-2);
+    border:1px solid var(--border);overflow:hidden;
+    display:flex;flex-direction:column;
+  }
+  .card .media{position:relative;overflow:hidden;background:#0a0a0a;flex:1}
+  .card .media img,.card .media video{
+    width:100%;height:100%;object-fit:cover;
+    filter:saturate(.92) contrast(1.04);
+    transition:transform 1.4s ease;
+  }
+  .card:hover .media img{transform:scale(1.03)}
+  .card .cap{
+    padding:14px 18px 16px;
+    display:flex;justify-content:space-between;align-items:flex-start;gap:14px;
+    border-top:1px solid var(--border);
+  }
+  .card .cap .t{
+    font-family:"Playfair Display",serif;font-weight:500;
+    color:var(--gold);font-size:15px;line-height:1.15;letter-spacing:-.005em;
+  }
+  .card .cap .t em{font-style:italic;font-weight:400;color:var(--paper);opacity:.85}
+  .card .cap .t .sub{
+    display:block;margin-top:5px;
+    font-family:"DM Sans",sans-serif;font-weight:400;
+    font-size:12.5px;color:var(--paper-dim);
+    line-height:1.45;max-width:48ch;letter-spacing:.005em;
+  }
+  .card .cap .meta{
+    flex-shrink:0;font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:var(--paper);font-weight:500;
+    text-align:right;line-height:1.6;white-space:nowrap;
+  }
+
+  /* aspect modifiers */
+  .ar-square .media{aspect-ratio:1/1}
+  .ar-wide .media{aspect-ratio:16/9}
+  .ar-landscape .media{aspect-ratio:3/2}
+  .ar-arch .media{aspect-ratio:16/7}
+
+  /* contain mode for CAD / architecture */
+  .contain .media{background:#161616}
+  .contain .media img{object-fit:contain;padding:18px;background:transparent;filter:saturate(.92) contrast(1.04)}
+
+  /* video card */
+  .video-card .media{background:#000}
+  .video-card video{width:100%;height:100%;object-fit:cover}
+  .video-card .badge{
+    position:absolute;top:12px;left:12px;z-index:3;
+    background:var(--blue);color:var(--ink);
+    padding:5px 10px;font-size:9.5px;letter-spacing:.26em;text-transform:uppercase;font-weight:600;
+    pointer-events:none;
+  }
+  .video-card .badge::before{
+    content:"";display:inline-block;width:6px;height:6px;
+    background:var(--ink);border-radius:50%;margin-right:7px;vertical-align:middle;
+    animation:blink 1.6s infinite;
+  }
+  @keyframes blink{0%,49%{opacity:1}50%,100%{opacity:.3}}
+
+  /* STL viewer card */
+  .stl-card .media{
+    background:radial-gradient(120% 100% at 50% 40%, #1a1d24 0%, #0a0a0a 100%);
+    cursor:grab;
+  }
+  .stl-card .media:active{cursor:grabbing}
+  .stl-card canvas{width:100%!important;height:100%!important;display:block}
+  .stl-card .hint{
+    position:absolute;top:12px;left:12px;z-index:3;
+    background:rgba(10,10,10,.6);backdrop-filter:blur(8px);
+    color:var(--paper-dim);
+    padding:6px 10px;
+    font-size:9.5px;letter-spacing:.24em;text-transform:uppercase;
+    border:1px solid var(--border);
+    pointer-events:none;
+    transition:opacity .4s ease;
+  }
+  .stl-card .hint b{color:var(--gold);font-weight:500}
+  .stl-card.interacted .hint{opacity:0}
+  .stl-card .loader{
+    position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    flex-direction:column;gap:14px;
+    color:var(--paper-faint);
+    font-size:10px;letter-spacing:.3em;text-transform:uppercase;
+    z-index:2;background:rgba(10,10,10,.6);
+    transition:opacity .5s ease;
+  }
+  .stl-card .loader.gone{opacity:0;pointer-events:none}
+  .stl-card .loader .bar{
+    width:120px;height:1px;background:var(--border);overflow:hidden;
+  }
+  .stl-card .loader .bar i{
+    display:block;height:100%;background:var(--gold);
+    transform-origin:left;transform:scaleX(0);
+    transition:transform .3s ease;
+  }
+
+  /* WHY section — compact */
+  .why-block{
+    max-width:980px;margin:0 auto;
+    display:grid;grid-template-columns:300px 1fr;
+    gap:clamp(20px,3vw,40px);
+    align-items:center;
+    background:var(--ink-2);border:1px solid var(--border);
+    padding:clamp(18px,2.5vw,28px);
+  }
+  .why-block .photo{
+    background:transparent;
+    overflow:hidden;
+  }
+  .why-block .photo img{
+    width:100%;height:auto;display:block;
+    filter:saturate(.88) contrast(1.05);
+  }
+  .why-block .photo figcaption{
+    margin-top:10px;
+    font-family:"Playfair Display",serif;font-style:italic;
+    font-size:12.5px;color:var(--paper-dim);text-align:center;
+  }
+  .why-block .text p{
+    font-family:"Playfair Display",serif;font-weight:400;
+    font-size:clamp(16px,1.35vw,19px);
+    line-height:1.55;letter-spacing:-.003em;
+    color:var(--paper);margin-bottom:.9em;
+  }
+  .why-block .text p em{font-style:italic;color:var(--paper-dim)}
+  .why-block .text .punch{
+    margin-top:14px;padding-top:14px;
+    border-top:1px solid var(--border);
+    font-family:"Playfair Display",serif;font-style:italic;font-weight:500;
+    font-size:clamp(18px,1.6vw,22px);line-height:1.2;color:var(--gold);
+    letter-spacing:-.005em;
+  }
+
+  /* slide card — full slide displayed at natural aspect */
+  .deck-slide{
+    margin-top:clamp(14px,2vw,22px);
+    background:var(--ink-2);
+    border:1px solid var(--border);
+    overflow:hidden;
+  }
+  .deck-slide.compact{
+    max-width:940px;margin-left:auto;margin-right:auto;
+  }
+  .deck-slide.medium{
+    max-width:920px;margin-left:auto;margin-right:auto;
+  }
+  .deck-slide .img{
+    background:#0a0a0a;display:block;
+  }
+  .deck-slide .img img{
+    width:100%;height:auto;display:block;
+    filter:saturate(.94) contrast(1.04);
+  }
+  .deck-slide .cap{
+    padding:20px 24px 22px;
+    display:flex;justify-content:space-between;align-items:flex-start;gap:18px;
+    border-top:1px solid var(--border);
+  }
+  .deck-slide .cap .t{
+    font-family:"Playfair Display",serif;font-weight:500;
+    color:var(--gold);font-size:clamp(17px,1.5vw,21px);
+    line-height:1.2;letter-spacing:-.005em;
+  }
+  .deck-slide .cap .t em{font-style:italic;font-weight:400;color:var(--paper);opacity:.9}
+  .deck-slide .cap .t .sub{
+    display:block;margin-top:10px;
+    font-family:"DM Sans",sans-serif;font-weight:400;
+    font-size:clamp(14px,1.1vw,16px);color:var(--paper);
+    line-height:1.55;max-width:68ch;letter-spacing:.005em;
+  }
+  .deck-slide .cap .t .sub b{color:var(--gold);font-weight:500}
+  .deck-slide .cap .meta{
+    flex-shrink:0;font-size:10.5px;letter-spacing:.26em;text-transform:uppercase;color:var(--paper);font-weight:500;
+    text-align:right;line-height:1.6;white-space:nowrap;
+  }
+
+  /* footer */
+  footer{
+    margin-top:clamp(50px,7vh,80px);
+    padding:24px clamp(20px,4vw,48px) 28px;
+    border-top:1px solid var(--border);
+    display:flex;justify-content:space-between;align-items:center;
+    font-size:10.5px;letter-spacing:.26em;text-transform:uppercase;color:var(--paper);font-weight:500;
+  }
+  footer b{color:var(--gold);font-weight:500;letter-spacing:.32em}
+
+  /* reveal */
+  .reveal{opacity:0;transform:translateY(14px);transition:opacity 800ms ease, transform 800ms cubic-bezier(.2,.7,.2,1)}
+  .reveal.on{opacity:1;transform:none}
+
+  /* zoomable images — cursor hint */
+  .zoomable{cursor:zoom-in;transition:filter .25s ease}
+  .zoomable:hover{filter:brightness(1.06) saturate(1.02)}
+
+  /* lightbox */
+  .lightbox{
+    position:fixed;inset:0;z-index:1000;
+    background:rgba(6,8,12,.92);
+    backdrop-filter:blur(10px) saturate(120%);
+    -webkit-backdrop-filter:blur(10px) saturate(120%);
+    display:none;
+    align-items:center;justify-content:center;
+    padding:clamp(20px,5vh,60px) clamp(20px,5vw,80px);
+    cursor:zoom-out;
+    opacity:0;transition:opacity .25s ease;
+  }
+  .lightbox.on{display:flex;opacity:1}
+  .lightbox .lb-stage{
+    position:relative;
+    max-width:min(1600px,96vw);
+    max-height:90vh;
+    display:flex;flex-direction:column;align-items:center;gap:14px;
+    animation:lbIn .35s cubic-bezier(.2,.7,.2,1);
+  }
+  @keyframes lbIn{from{opacity:0;transform:translateY(10px) scale(.985)}to{opacity:1;transform:none}}
+  .lightbox .lb-img{
+    max-width:100%;
+    max-height:calc(90vh - 60px);
+    object-fit:contain;
+    box-shadow:0 30px 90px -20px rgba(0,0,0,.6);
+    border:1px solid #2a2a2a;
+    background:#0a0a0a;
+    cursor:default;
+  }
+  .lightbox .lb-cap{
+    font-family:"Playfair Display",serif;font-style:italic;font-weight:400;
+    color:var(--paper);
+    font-size:14px;letter-spacing:.01em;
+    text-align:center;
+    max-width:80ch;
+    cursor:default;
+  }
+  .lightbox .lb-close{
+    position:absolute;top:18px;right:22px;z-index:2;
+    width:38px;height:38px;
+    display:flex;align-items:center;justify-content:center;
+    background:rgba(20,20,20,.6);
+    color:var(--paper);
+    border:1px solid #2a2a2a;
+    font-size:20px;line-height:1;
+    cursor:pointer;
+    transition:all .2s ease;
+  }
+  .lightbox .lb-close:hover{background:var(--gold);color:var(--ink);border-color:var(--gold)}
+  .lightbox .lb-hint{
+    position:absolute;bottom:14px;left:50%;transform:translateX(-50%);
+    font-size:9.5px;letter-spacing:.3em;text-transform:uppercase;
+    color:var(--paper-faint);pointer-events:none;
+  }
+
+  /* responsive */
+  @media (max-width:880px){
+    .grid-2,.grid-2-asym,.grid-2-team-a,.grid-2-team-b,.grid-3{grid-template-columns:1fr}
+    .sec-head{flex-direction:column;align-items:flex-start;gap:8px}
+    .sec-head .R{text-align:left}
+    .card .cap{flex-direction:column;gap:6px}
+    .card .cap .meta{text-align:left}
+    .why-block{grid-template-columns:1fr;max-width:520px}
+    .why-block .photo img{aspect-ratio:4/3}
+    .mainshot .cap{flex-direction:column;gap:6px}
+    .mainshot .cap .meta{text-align:left}
+    footer{flex-direction:column;align-items:flex-start;gap:6px}
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div><b>VOCL</b> &nbsp;·&nbsp; Atharva Vaze · Lead of Machine Learning</div>
+  <div>Conrad Challenge &nbsp;·&nbsp; Blue Ocean &nbsp;·&nbsp; ISEF &nbsp;·&nbsp; Canopy</div>
+</header>
+
+<!-- ============ TITLE BLOCK ============ -->
+<section class="titleblock">
+  <div class="label">Voicing the Voiceless</div>
+  <h1>VOCL <em>— a non-invasive EMG headset.</em></h1>
+  <div class="tag">
+    <span>Decoding attempted speech for ALS &amp; speech-loss patients</span>
+    <span class="dot"></span>
+    <span class="muted">Built 2025–2026 · Neuqua Valley</span>
+  </div>
+</section>
+
+<!-- ============ MAIN PHOTO — NASA team, uncropped ============ -->
+<div class="mainshot reveal">
+  <figure class="frame">
+    <img src="image2.jpg" alt="The VOCL team at their booth at NASA Space Center Houston during the Conrad Challenge finals.">
+    <figcaption class="cap">
+      <span class="t">Conrad Challenge — <em>Innovation Summit &amp; Expo.</em>
+        <span class="sub">VOCL booth at the Conrad Innovation Summit, NASA Space Center Houston.</span>
+      </span>
+      <span class="meta">2026<br>Conrad · NASA</span>
+    </figcaption>
+  </figure>
+</div>
+
+<div class="wrap">
+
+  <!-- ============ I. THE HEADSET ============ -->
+  <section>
+    <div class="sec-head reveal">
+      <div class="L"><span class="num">I.</span>The <em>Headset.</em></div>
+      <div class="R">Demo · CAD · Interactive · Pipeline</div>
+    </div>
+
+    <!-- row 1: demo video + CAD -->
+    <div class="grid-2-asym">
+      <figure class="card video-card ar-wide reveal">
+        <div class="media">
+          <span class="badge">Live Demo</span>
+          <video src="hello.mov" controls preload="metadata" playsinline></video>
+        </div>
+        <figcaption class="cap">
+          <span class="t">Craig de Fiesta — <em>testing the headset.</em>
+            <span class="sub">Teammate Craig running a live test: silent "hello" → facial EMG → phoneme decode (HH–EH–L–OW) → app voices it in under 300ms.</span>
+          </span>
+          <span class="meta">hello.mov<br>Apr 2026</span>
+        </figcaption>
+      </figure>
+
+      <figure class="card contain ar-wide reveal">
+        <div class="media"><img src="image4.jpeg" alt="Exploded CAD diagram of the VOCL Echo headset showing the gold cup electrodes, OpenBCI Cyton board, and 4× 3.7V batteries."></div>
+        <figcaption class="cap">
+          <span class="t">The CAD<span class="sub">8× gold-cup electrodes · OpenBCI Cyton board · 4× 3.7V batteries · 356.9g.</span></span>
+          <span class="meta">Hardware</span>
+        </figcaption>
+      </figure>
+    </div>
+
+    <!-- row 2: system architecture -->
+    <figure class="deck-slide medium reveal" style="margin-top:clamp(14px,2vw,22px)">
+      <div class="img"><img src="slides/arch-content.png" alt="System architecture flow: Hardware → Signal Processing → CNN-LSTM Model → LLM Integration."></div>
+      <figcaption class="cap">
+        <span class="t">The pipeline — <em>signal to speech.</em>
+          <span class="sub">Facial EMG → CNN-LSTM phoneme decoder → LLM word assembly → spoken output. Built end-to-end.</span>
+        </span>
+        <span class="meta">System Architecture</span>
+      </figcaption>
+    </figure>
+  </section>
+
+  <!-- ============ II. THE TEAM ============ -->
+  <section>
+    <div class="sec-head reveal">
+      <div class="L"><span class="num">II.</span>The Team — <em>five high schoolers.</em></div>
+      <div class="R">Conrad · Blue Ocean · Canopy</div>
+    </div>
+
+    <div class="grid-2">
+      <figure class="card ar-landscape reveal">
+        <div class="media"><img src="image10.jpeg" alt="VOCL team accepting an award with Nancy Conrad at the Conrad Challenge finals."></div>
+        <figcaption class="cap">
+          <span class="t">Pete Conrad <em>Scholar Distinction</em><span class="sub">Pictured left to right: Daniel Newmyer (CLO, Space Center Houston), Craig de Fiesta, Jayden Chiou, Idhant Ranjan, Atharva Vaze, James Zhou, Nancy Conrad.</span></span>
+          <span class="meta">NASA · 2026</span>
+        </figcaption>
+      </figure>
+
+      <figure class="card ar-landscape reveal">
+        <div class="media"><img src="image3.jpg" alt="VOCL team outside the NASA Space Center Houston entrance with the Conrad trophy."></div>
+        <figcaption class="cap">
+          <span class="t">Outside the Space Center<span class="sub">VOCL team — Johnson Space Center, Houston.</span></span>
+          <span class="meta">Houston · 2026</span>
+        </figcaption>
+      </figure>
+    </div>
+
+    <figure class="deck-slide medium reveal">
+      <div class="img"><img src="slides/hi-09.png" alt="VOCL research mentors — Dr. Nicholas Hatsopoulos, Dr. David Moses, Dr. Stephanie Palmer, Dr. Lee Miller."></div>
+      <figcaption class="cap">
+        <span class="t">Research <em>mentors.</em>
+          <span class="sub">Dr. Nicholas Hatsopoulos (UChicago) · Dr. David Moses (UCSF) · Dr. Stephanie Palmer (UChicago) · Dr. Lee Miller (Northwestern).</span>
+        </span>
+        <span class="meta">Validation</span>
+      </figcaption>
+    </figure>
+  </section>
+
+  <!-- ============ III. THE WHY (compact) ============ -->
+  <section>
+    <div class="sec-head reveal">
+      <div class="L"><span class="num">III.</span>The Why — <em>Ye-Ye.</em></div>
+      <div class="R">The reason we built it</div>
+    </div>
+
+    <div class="why-block reveal">
+      <figure class="photo">
+        <img src="image8.png" alt="Ye-Ye, James' grandfather, the inspiration behind VOCL.">
+        <figcaption>Ye-Ye · James' grandfather</figcaption>
+      </figure>
+      <div class="text">
+        <p>This is Ye-Ye — James's grandfather. He was diagnosed with ALS, and over time, the disease stole his ability to speak. The solutions available to him were too slow, too expensive, or required surgery. Ye-Ye passed away without a device that could keep up with his thoughts.</p>
+        <p class="punch">We knew there had to be a better way.</p>
+      </div>
+    </div>
+
+    <figure class="deck-slide compact reveal">
+      <div class="img"><img src="slides/hi-10.png" alt="Comparison of speech solutions — Traditional AAC vs. Invasive BCI vs. VOCL Echo on price, speed, non-invasive, hands-free, Medicare eligibility."></div>
+      <figcaption class="cap">
+        <span class="t">Current solutions were <em>inadequate.</em>
+          <span class="sub">AAC tablets like the <b>Tobii Dynavox</b> are so frustratingly slow that <b>40% of users abandon them entirely.</b> Invasive brain-chip interfaces can cost <b>upwards of $100,000</b> and require open-skull surgery. We knew there had to be a better way.</span>
+        </span>
+        <span class="meta">Competition</span>
+      </figcaption>
+    </figure>
+  </section>
+</div>
+
+<footer>
+  <div><b>VOCL</b> &nbsp;·&nbsp; Voicing the Voiceless</div>
+  <div>Atharva Vaze · MMXXVI</div>
+</footer>
+
+<!-- ============ LIGHTBOX ============ -->
+<div class="lightbox" id="lightbox" aria-hidden="true">
+  <button class="lb-close" id="lb-close" aria-label="Close">×</button>
+  <div class="lb-stage">
+    <img class="lb-img" id="lb-img" src="" alt="">
+    <div class="lb-cap" id="lb-cap"></div>
+  </div>
+  <div class="lb-hint">Click anywhere or press <b>Esc</b> to close</div>
+</div>
+
+<script>
+  // reveal on scroll
+  const io = new IntersectionObserver((entries) => {
+    for (const e of entries) {
+      if (e.isIntersecting) { e.target.classList.add('on'); io.unobserve(e.target); }
+    }
+  }, { threshold: .12, rootMargin: "0px 0px -30px 0px" });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  /* ===== lightbox: click any image to enlarge ===== */
+  const lb = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lb-img');
+  const lbCap = document.getElementById('lb-cap');
+  const lbClose = document.getElementById('lb-close');
+
+  function openLB(img){
+    lbImg.src = img.currentSrc || img.src;
+    lbImg.alt = img.alt || '';
+    // pull a caption from the closest figure / mainshot / why-block
+    const fig = img.closest('figure') || img.closest('.mainshot') || img.closest('.why-block');
+    let cap = '';
+    if (fig){
+      const t = fig.querySelector('figcaption .t, .cap .t');
+      const sub = fig.querySelector('figcaption .sub, .cap .sub');
+      cap = (t ? t.childNodes[0].textContent.trim() : '') + (sub ? ' — ' + sub.textContent.trim() : '');
+      if (!cap) {
+        const figcap = fig.querySelector('figcaption');
+        if (figcap) cap = figcap.textContent.trim();
+      }
+    }
+    lbCap.textContent = cap;
+    lb.classList.add('on');
+    lb.setAttribute('aria-hidden','false');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeLB(){
+    lb.classList.remove('on');
+    lb.setAttribute('aria-hidden','true');
+    document.body.style.overflow = '';
+    setTimeout(()=>{ lbImg.src=''; }, 250);
+  }
+
+  // wire every <img> on the page except inside the lightbox itself
+  document.querySelectorAll('img').forEach(img => {
+    if (img.closest('.lightbox')) return;
+    img.classList.add('zoomable');
+    img.addEventListener('click', (e) => { e.stopPropagation(); openLB(img); });
+  });
+
+  lb.addEventListener('click', closeLB);
+  lbClose.addEventListener('click', (e) => { e.stopPropagation(); closeLB(); });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && lb.classList.contains('on')) closeLB();
+  });
+</script>
+
+</body>
+</html>
