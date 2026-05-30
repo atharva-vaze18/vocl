@@ -82,10 +82,64 @@
   .titleblock .tag .muted{color:var(--paper-dim);font-weight:500}
   .titleblock .tag .dot{width:3px;height:3px;background:var(--gold);border-radius:50%;display:inline-block;vertical-align:middle;margin:0 8px}
 
+  /* film CTA — "Watch the Film" */
+  .filmcta{
+    margin-top:28px;
+    display:inline-flex;align-items:center;gap:15px;
+    padding:11px 13px 11px 15px;
+    background:linear-gradient(180deg,var(--ink-3),var(--ink-2));
+    border:1px solid var(--gold-deep);
+    color:var(--paper);text-decoration:none;
+    box-shadow:0 0 0 0 rgba(201,168,76,0);
+    transition:border-color .35s ease, background .35s ease, transform .35s ease, box-shadow .35s ease;
+  }
+  .filmcta:hover{
+    border-color:var(--gold);
+    transform:translateY(-2px);
+    box-shadow:0 14px 36px -16px rgba(201,168,76,.5);
+  }
+  .filmcta .play{
+    position:relative;flex-shrink:0;width:36px;height:36px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    background:var(--gold);color:var(--ink);
+    box-shadow:0 0 14px -2px rgba(201,168,76,.45);
+    transition:transform .35s ease;
+  }
+  /* soft pulsing ring to draw the eye, kept subtle */
+  .filmcta .play::before{
+    content:"";position:absolute;inset:0;border-radius:50%;
+    border:1px solid var(--gold);
+    animation:filmpulse 2.6s ease-out infinite;
+  }
+  @keyframes filmpulse{
+    0%{opacity:.55;transform:scale(1)}
+    70%{opacity:0;transform:scale(1.5)}
+    100%{opacity:0;transform:scale(1.5)}
+  }
+  .filmcta:hover .play{transform:scale(1.08)}
+  .filmcta .play svg{width:14px;height:14px;margin-left:2px;fill:currentColor}
+  .filmcta .txt{text-align:left;line-height:1.25}
+  .filmcta .txt .k{
+    display:block;
+    font-family:"Playfair Display",serif;font-weight:500;font-size:15px;
+    color:var(--gold);letter-spacing:.005em;
+  }
+  .filmcta:hover .txt .k{color:var(--paper)}
+  .filmcta .txt .s{
+    display:block;margin-top:2px;
+    font-size:9.5px;letter-spacing:.26em;text-transform:uppercase;
+    color:var(--paper-dim);font-weight:500;
+  }
+  .filmcta .run{
+    margin-left:6px;padding-left:14px;border-left:1px solid var(--border);
+    font-size:9.5px;letter-spacing:.26em;text-transform:uppercase;
+    color:var(--paper-faint);font-weight:500;align-self:center;
+  }
+
   /* main photo (NASA), no crop */
   .mainshot{
     margin:0 auto clamp(50px,7vh,80px);
-    max-width:860px;
+    max-width:740px;
     padding:0 clamp(20px,4vw,48px);
   }
   .mainshot .frame{
@@ -403,6 +457,7 @@
 
   /* responsive */
   @media (max-width:880px){
+    .topbar{flex-direction:column;align-items:flex-start;gap:6px;line-height:1.5}
     .grid-2,.grid-2-asym,.grid-2-team-a,.grid-2-team-b,.grid-3{grid-template-columns:1fr}
     .sec-head{flex-direction:column;align-items:flex-start;gap:8px}
     .sec-head .R{text-align:left}
@@ -432,6 +487,15 @@
     <span class="dot"></span>
     <span class="muted">Built 2025–2026 · Neuqua Valley</span>
   </div>
+
+  <a class="filmcta" href="https://www.youtube.com/watch?v=ZFdaj3oSg1I" target="_blank" rel="noopener">
+    <span class="play"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 1.5v13l11-6.5z"/></svg></span>
+    <span class="txt">
+      <span class="k">Watch the Film</span>
+      <span class="s">VOCL — the story</span>
+    </span>
+    <span class="run">5 min</span>
+  </a>
 </section>
 
 <!-- ============ MAIN PHOTO — NASA team, uncropped ============ -->
@@ -503,7 +567,7 @@
       <figure class="card ar-landscape reveal">
         <div class="media"><img src="image10.jpeg" alt="VOCL team accepting an award with Nancy Conrad at the Conrad Challenge finals."></div>
         <figcaption class="cap">
-          <span class="t">Pete Conrad <em>Scholar Distinction</em><span class="sub">Pictured left to right: Daniel Newmyer (CLO, Space Center Houston), Craig de Fiesta, Jayden Chiou, Idhant Ranjan, Atharva Vaze, James Zhou, Nancy Conrad.</span></span>
+          <span class="t">Pete Conrad Scholar <em>Distinction</em><span class="sub">Pictured left to right: Daniel Newmyer (CLO, Space Center Houston), Craig de Fiesta, Jayden Chiou, Idhant Ranjan, Atharva Vaze, James Zhou, Nancy Conrad.</span></span>
           <span class="meta">NASA · 2026</span>
         </figcaption>
       </figure>
